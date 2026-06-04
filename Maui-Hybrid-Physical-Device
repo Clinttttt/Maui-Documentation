@@ -1,5 +1,5 @@
- "C:\Program Files (x86)\Android\android-sdk\platform-tools\adb.exe" connect 192.168.100.24:37151
+& "C:\Program Files (x86)\Android\android-sdk\platform-tools\adb.exe" connect 192.168.100.24:37151
 
 
 
-"C:\Program Files (x86)\Android\android-sdk\platform-tools\adb.exe" pair 192.168.100.24:39485
+& "C:\Program Files (x86)\Android\android-sdk\platform-tools\adb.exe" pair 192.168.100.24:39485
