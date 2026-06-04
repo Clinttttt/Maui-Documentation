@@ -8,45 +8,26 @@
 
 
 & "C:\Program Files (x86)\Android\android-sdk\platform-tools\adb.exe" -s 192.168.100.24:37871 reverse tcp:5117 tcp:5117
-
 dotnet run --launch-profile http
-
-
-
-
-
-
-
 & "C:\Program Files (x86)\Android\android-sdk\platform-tools\adb.exe" pair 192.168.100.24:39145
-
-
 & "C:\Program Files (x86)\Android\android-sdk\platform-tools\adb.exe" connect 192.168.100.24:44889
 
 
- Confirm device
-
-& "C:\Program Files (x86)\Android\android-sdk\platform-tools\adb.exe" devices -l
 
 
- forward API port
-Every time you reconnect, run:
 
 
-& "C:\Program Files (x86)\Android\android-sdk\platform-tools\adb.exe" reverse tcp:5117 tcp:5117
-
-That makes your phone app’s `http://127.0.0.1:5117` reach your laptop API.
-
-**6. Run API**
-In another terminal:
-
-```powershell
-dotnet run --project EEMOCantilanSDS.Api\EEMOCantilanSDS.Api.csproj --launch-profile http
-```
-
-**7. Deploy app
-From repo root:
 
 
-dotnet build EEMOCantilanSDS.Mobile\EEMOCantilanSDS.Mobile.csproj -f net10.0-android -t:Run /m:1
+Use -s with one device ID. Since your Wi-Fi IP device is likely this one, run:
+
+& "C:\Program Files (x86)\Android\android-sdk\platform-tools\adb.exe" -s 192.168.100.24:44309 reverse tcp:5117 tcp:5117
+
+Then verify:
+
+& "C:\Program Files (x86)\Android\android-sdk\platform-tools\adb.exe" -s 192.168.100.24:44309 reverse --list
+
+
+ 
 
 
