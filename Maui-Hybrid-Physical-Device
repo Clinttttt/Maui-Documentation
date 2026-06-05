@@ -35,64 +35,107 @@ HERE
 
 
 
-Sure bro. Every time you want to run the MAUI mobile app on your Android phone through wireless debugging, do this:
+Bro that’s the issue: your API is running fine, but the mobile app points to:
 
-**Phone Setup**
-1. Connect your laptop and phone to the same Wi-Fi.
-2. On phone, enable Developer Options.
-3. Go to `Developer options > Wireless debugging`.
-4. Turn on `Wireless debugging`.
-
-**Pair Phone**
-Do this if the phone is not paired yet, or pairing expired:
-
-
-& "C:\Program Files (x86)\Android\android-sdk\platform-tools\adb.exe" pair PHONE_IP:PAIR_PORT
-
-Then enter the pairing code shown on your phone.
-
-**Connect Phone**
-After pairing, use the separate connect IP/port from the Wireless Debugging screen:
-
-```powershell
-& "C:\Program Files (x86)\Android\android-sdk\platform-tools\adb.exe" connect PHONE_IP:CONNECT_PORT
+```text
+http://127.0.0.1:5117/
 ```
 
-Example:
+On your Android phone, `127.0.0.1` means the phone itself. Last night it worked because you probably had `adb reverse` active. Today it was gone.
+
+I already ran this for you:
 
 ```powershell
-& "C:\Program Files (x86)\Android\android-sdk\platform-tools\adb.exe" connect 192.168.100.24:44889
+& "C:\Program Files (x86)\Android\android-sdk\platform-tools\adb.exe" reverse tcp:5117 tcp:5117
 ```
 
-**Verify**
+Now your phone’s `127.0.0.1:5117` forwards to your laptop API.
+
+Every time you reconnect/run mobile, do this order:
+
+1. Start API:
+
+```powershell
+cd "C:\Users\ASUS VIVOBOOK\OneDrive\Documents\Repository\EEMOCantilanSDS\EEMOCantilanSDS.Api"
+dotnet run --launch-profile http
+```
+
+2. Connect phone with ADB:
+
+```powershell
+& "C:\Program Files (x86)\Android\android-sdk\platform-tools\adb.exe" connect PHONE_IP:PORT
+```
+
+3. Verify phone is connected:
+
 ```powershell
 & "C:\Program Files (x86)\Android\android-sdk\platform-tools\adb.exe" devices -l
 ```
 
-You should see something like:
-
-```text
-192.168.100.24:44889    device
-```
-
-**Run App**
-1. Open Visual Studio.
-2. Select your Android phone as the target device.
-3. Run `EEMOCantilanSDS.Mobile`.
-
-If it fails or disappears, restart ADB:
+4. Set reverse tunnel:
 
 ```powershell
-& "C:\Program Files (x86)\Android\android-sdk\platform-tools\adb.exe" kill-server
-& "C:\Program Files (x86)\Android\android-sdk\platform-tools\adb.exe" start-server
-& "C:\Program Files (x86)\Android\android-sdk\platform-tools\adb.exe" connect PHONE_IP:CONNECT_PORT
+& "C:\Program Files (x86)\Android\android-sdk\platform-tools\adb.exe" reverse tcp:5117 tcp:5117
 ```
 
-Important: `pair` port and `connect` port are different. Use the exact ports shown on your phone.
+5. Verify reverse exists:
+
+```powershell
+& "C:\Program Files (x86)\Android\android-sdk\platform-tools\adb.exe" reverse --list
+```
+
+You should see:
+
+```text
+tcp:5117 tcp:5117
+```
+
+Then run the mobile app. Your API terminal should start showing login/API requests again.
 
 
 
 
- 
+HERE V2
 
 
+USB is the better setup, bro. I checked the app side and fixed the splash/auth restore issue so it won’t stay stuck if the saved session restore cannot reach the API. Mobile Android build passes now.
+
+Use this every time with USB:
+
+```powershell
+cd "C:\Users\ASUS VIVOBOOK\OneDrive\Documents\Repository\EEMOCantilanSDS\EEMOCantilanSDS.Api"
+dotnet run --launch-profile http
+```
+
+Keep that API terminal open. Then in another terminal:
+
+```powershell
+$adb = "C:\Users\ASUS VIVOBOOK\AppData\Local\Android\Sdk\platform-tools\adb.exe"
+
+& $adb kill-server
+& $adb start-server
+& $adb devices -l
+& $adb reverse --remove-all
+& $adb reverse tcp:5117 tcp:5117
+& $adb reverse --list
+```
+
+You should see:
+
+```text
+tcp:5117 tcp:5117
+```
+
+Then run the mobile app from Visual Studio using your USB device target.
+
+If it still gets stuck after redeploying, clear the old saved app session once:
+
+```powershell
+& $adb shell pm clear com.companyname.eemocantilansds.mobile
+```
+
+Then open/run the app and login again.
+
+Important: `adb reverse` resets when you unplug, reboot the phone, restart ADB, or sometimes after Visual Studio deploys. So rerun the reverse commands when it stops calling the API. Also use the AppData ADB path above, since your machine has two ADB versions installed and mixing them can cause weird behavior.
+
+Verification: `dotnet build` for `net10.0-android` succeeded. Only remaining output is the existing EF Core package version warning, not a build blocker.
