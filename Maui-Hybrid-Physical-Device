@@ -28,6 +28,71 @@ Then verify:
 & "C:\Program Files (x86)\Android\android-sdk\platform-tools\adb.exe" -s 192.168.100.24:44309 reverse --list
 
 
+
+
+
+HERE 
+
+
+
+Sure bro. Every time you want to run the MAUI mobile app on your Android phone through wireless debugging, do this:
+
+**Phone Setup**
+1. Connect your laptop and phone to the same Wi-Fi.
+2. On phone, enable Developer Options.
+3. Go to `Developer options > Wireless debugging`.
+4. Turn on `Wireless debugging`.
+
+**Pair Phone**
+Do this if the phone is not paired yet, or pairing expired:
+
+
+& "C:\Program Files (x86)\Android\android-sdk\platform-tools\adb.exe" pair PHONE_IP:PAIR_PORT
+
+Then enter the pairing code shown on your phone.
+
+**Connect Phone**
+After pairing, use the separate connect IP/port from the Wireless Debugging screen:
+
+```powershell
+& "C:\Program Files (x86)\Android\android-sdk\platform-tools\adb.exe" connect PHONE_IP:CONNECT_PORT
+```
+
+Example:
+
+```powershell
+& "C:\Program Files (x86)\Android\android-sdk\platform-tools\adb.exe" connect 192.168.100.24:44889
+```
+
+**Verify**
+```powershell
+& "C:\Program Files (x86)\Android\android-sdk\platform-tools\adb.exe" devices -l
+```
+
+You should see something like:
+
+```text
+192.168.100.24:44889    device
+```
+
+**Run App**
+1. Open Visual Studio.
+2. Select your Android phone as the target device.
+3. Run `EEMOCantilanSDS.Mobile`.
+
+If it fails or disappears, restart ADB:
+
+```powershell
+& "C:\Program Files (x86)\Android\android-sdk\platform-tools\adb.exe" kill-server
+& "C:\Program Files (x86)\Android\android-sdk\platform-tools\adb.exe" start-server
+& "C:\Program Files (x86)\Android\android-sdk\platform-tools\adb.exe" connect PHONE_IP:CONNECT_PORT
+```
+
+Important: `pair` port and `connect` port are different. Use the exact ports shown on your phone.
+
+
+
+
  
 
 
