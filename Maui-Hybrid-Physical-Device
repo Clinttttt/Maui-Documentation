@@ -14,6 +14,17 @@ dotnet run --launch-profile http
 
 
 
+V1
+$adb = "C:\Users\ASUS VIVOBOOK\AppData\Local\Android\Sdk\platform-tools\adb.exe"
+
+& $adb reverse --remove-all
+& $adb reverse tcp:5117 tcp:5117
+& $adb reverse --list
+
+
+
+
+
 
 
 
