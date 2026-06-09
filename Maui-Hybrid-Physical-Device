@@ -15,6 +15,10 @@ dotnet run --launch-profile http
 
 
 V1
+
+(kill any process)
+Get-Process -Name "dotnet","MSBuild","java","adb" -ErrorAction SilentlyContinue | Stop-Process -Force
+
 $adb = "C:\Users\ASUS VIVOBOOK\AppData\Local\Android\Sdk\platform-tools\adb.exe"
 
 & $adb reverse --remove-all
